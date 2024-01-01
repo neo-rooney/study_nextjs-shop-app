@@ -7,30 +7,38 @@ import { auth } from "@/firebase/firebase";
 import { toast } from "react-toastify";
 import { usePathname, useRouter } from "next/navigation";
 import InnerHeader from "../innerHeader/InnerHeader";
+import { useDispatch } from "react-redux";
+import { REMOVE_ACTIVE_USER, SET_ACTIVE_USER } from "@/redux/slice/authSlice";
 
 const Header = () => {
   const pathname = usePathname();
   const [displayName, setDisplayName] = useState("");
+  const dispatch = useDispatch();
   const router = useRouter();
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
-      console.log(user);
       if (user) {
         if (user.displayName === null) {
           const u1 = user.email.substring(0, user.email.indexOf("@"));
           const uName = u1.charAt(0).toUpperCase() + u1.slice(1);
           setDisplayName(uName);
+          dispatch(
+            SET_ACTIVE_USER({
+              email: user.email,
+              userName: user.displayName || displayName,
+              userID: user.uid,
+            })
+          );
         } else {
           setDisplayName(user.displayName);
         }
-        // 유저 정보를 리덕스 스토어에 저장하기
       } else {
         setDisplayName("");
-        // 유저 정보를 리덕스 스토어에서 삭제하기
+        dispatch(REMOVE_ACTIVE_USER());
       }
     });
-  }, []);
+  }, [dispatch, displayName]);
 
   const logoutUser = () => {
     signOut(auth)

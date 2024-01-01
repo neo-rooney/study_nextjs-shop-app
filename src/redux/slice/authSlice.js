@@ -16,7 +16,7 @@ const authSlice = createSlice({
       state.isLoggedIn = true;
       state.email = email;
       state.userName = userName;
-      state.userID = useID;
+      state.userID = userID;
     },
     REMOVE_ACTIVE_USER: (state) => {
       state.isLoggedIn = false;
